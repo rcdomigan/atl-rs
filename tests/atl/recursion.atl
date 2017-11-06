@@ -1,0 +1,16 @@
+;; Some basic tests of recursion:
+
+;; Can I make a Fibinocci sequence
+; 0 1 1 2 3 5
+(define fib-inner (prev current count)
+  (if (= 0 count) current
+      (fib-inner current (+ prev current) (- count 1))))
+
+
+(define fib (n) (fib-inner 0 1 n))
+
+(test-eq! (fib 2) 1)
+(test-eq! (fib 3) 2)
+(test-eq! (fib 4) 3)
+(test-eq! (fib 5) 5)
+(test-eq! (fib 6) 8)

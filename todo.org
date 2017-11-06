@@ -1,0 +1,25 @@
+* GC
+- [ ] Move closure definitions into store
+  - [ ] mechanism to mark which items are closures during debugging?
+- [ ] Conservative mark+sweep (probably easiest to implement)
+* Macros
+* Variadic functions
+* Currying
+- rest form like (+ a ...), partially apply on the first argument by default
+  (+ 2) => (\\ (b) (+ 2 b))
+  (+ 1 2) => 3
+* Type inference
+* error reporting
+** In Compiler:
+- I think I'd like to Return more context information (ie the Ast and
+  what triggered the error) from the compiler.
+  - [ ] Would it be easier to give compile ownership of the ast and
+    thread the object through?
+  - [ ] Is just making an Ast string enough (maybe look at error
+    handling examples in Rust By Example)
+- [ ] Look into how rustc is structured
+- [ ] What else do they keep on Ast nodes?  Line numbers (on all nodes? just symbols?)
+* Type checking
+  Types could be assign manually (or with very limited inference), I
+  still need a way to check that they're valid
+* assertions

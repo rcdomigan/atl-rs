@@ -1,0 +1,5 @@
+;; Test core language features
+
+; Check that type declaration doesn't modify value:
+(assert-eq 3 ((: (-> Num Num) add2) 1 2))
+(assert-eq 3 (: Num 3))

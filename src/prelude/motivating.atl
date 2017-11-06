@@ -1,0 +1,90 @@
+(define fold
+  (: (-> (-> t u v) t (Seq u) v)
+   (\ (func init (Seq head rest))  (fold func (func init head) rest)
+      (func init Empty) init)))
+
+(define fold
+  (: (-> (-> t u v) t (Seq u) v)
+   (\ (func init seq)
+    (let ((loop
+           (\ (if (empty? seq) acc
+                  (loop (func acc (head seq)) (rest seq))))))
+      (loop init seq)))))
+
+(define-macro + (\ (ast output) (output 'fold 'add2 ('Tuple ast))))
+
+(define-macro
+	add3
+	(:
+     (-> Ast BuildAst Ast)
+     (\ (input)
+      (>> (push 'add2)
+          (>> (push (nth 0 input))
+              (>> (nest (>> (push 'add2)
+                            (>> (push (nth 1 input))
+                                (push (nth 2 input)))))))))))
+
+(macro-pattern
+ add3!
+ (a b c) `(add2 ,a (add2 ,b ,c)))
+
+(define func (\ ((Seq head rest) output) (push (>> head (do-func rest output)) output)
+			  ((Empty) output) Empty))
+
+(define-macro do do-func)
+
+(class Ast (a)
+  (: (-> a (-> a (Ast b)) (Ast b))
+     (>>= (\ (input fn state)
+           (let (((Tuple input) (runAst () state)))
+             (runAst )))))
+  (: (-> a (Ast a))
+     (return (\ (value ast) (Tuple value ast)))))
+
+;;;;;;;;;;;;;;;;;;;;;;;
+;;;  _         _    ;;;
+;;; | |    ___| |_  ;;;
+;;; | |   / _ \ __| ;;;
+;;; | |__|  __/ |_  ;;;
+;;; |_____\___|\__| ;;;
+;;;;;;;;;;;;;;;;;;;;;;;
+;; auxilary function for 'let', breaks a let parameter list into a
+;; list of symbols and a list of values.
+(def (let-symbols/values lst)
+  (if (Null? lst)
+    (list '() '())
+    ((\ (params/args) (list (cons (car lst) (car params/args))
+                     (cons (cadr lst) (cadr params/args))))
+     (let-symbols/values (cddr lst)))))
+
+;; the let form
+(define-macro
+  (let lst)
+  ((\ (args) (cons (list \ (car args) (cadr lst))
+                   (cadr args)))
+   (let-symbol-names (car lst))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;     _         _ _   _                    _   _       ;;;
+;;;    / \   _ __(_) |_| |__  _ __ ___   ___| |_(_) ___  ;;;
+;;;   / _ \ | '__| | __| '_ \| '_ ` _ \ / _ \ __| |/ __| ;;;
+;;;  / ___ \| |  | | |_| | | | | | | | |  __/ |_| | (__  ;;;
+;;; /_/   \_\_|  |_|\__|_| |_|_| |_| |_|\___|\__|_|\___| ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(def (apply-operator operator acc lst)
+  (if (Null? lst)
+    acc
+    (apply-operator operator
+                    (operator acc (car lst))
+                    (cdr lst))))
+
+(define-macro
+  (+ lst)
+  (list apply-operator bin-add (car lst)
+        (cons 'list (cdr lst))))
+
+(define-macro
+  (- lst)
+  (list apply-operator bin-sub (car lst)
+        (cons 'list (cdr lst))))
+
