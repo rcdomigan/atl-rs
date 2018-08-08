@@ -19,7 +19,7 @@ Such as it is, integers and a few basic functions are supported.
 - `equal`: Compare two integers for equality
 - `\`: Declare an anonymous function.  Tuple de-structuring is supported (eg `(\ ((Tuple a b c)) (add2 a (add2 b c)))`).
 - `define`: define an expression (define a function with `(define func (lambda (...) (...)))`)
-- `Tuple`: define a tuple (eg `(Tuple 1 2 3)`).  Tuples are supported by
+- `Tuple`: define a tuple (eg `(Tuple 1 2 3)`).
 - `exit`: quit the VM
 - `if`: an if statement (eg `(if True 1 2)`)
 - `True`: boolean true (name will probably change to #t)
